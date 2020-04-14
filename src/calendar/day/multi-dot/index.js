@@ -63,6 +63,7 @@ class Day extends Component {
     const marking = this.props.marking || {};
     const dot = this.renderDots(marking);
     const isDisabled = typeof marking.disabled !== 'undefined' ? marking.disabled : this.props.state === 'disabled';
+    let backColor = 'transparent';
 
     if (marking.selected) {
       containerStyle.push(this.style.selected);
@@ -74,7 +75,10 @@ class Day extends Component {
       textStyle.push(this.style.disabledText);
     } else if (this.props.state === 'today') {
       containerStyle.push(this.style.today);
+      // containerStyle.push({borderRadius: 50, borderWidth: 1, padding: 1})
       textStyle.push(this.style.todayText);
+      // textStyle.push({backgroundColor: 'green'});
+      backColor = this.props.todayBackColor;
     }
     
     return (
@@ -87,7 +91,9 @@ class Day extends Component {
         accessibilityRole={isDisabled ? undefined : 'button'}
         accessibilityLabel={this.props.accessibilityLabel}
       >
-        <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
+        <View style={{backgroundColor: backColor, borderRadius: 50, padding: 5, paddingBottom: 1}}>
+          <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
+        </View>
         <View style={{flexDirection: 'row'}}>{dot}</View>
       </TouchableOpacity>
     );
