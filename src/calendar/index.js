@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {View, ViewPropTypes} from 'react-native';
+import {View, ViewPropTypes, Text, FlatList} from 'react-native';
 import PropTypes from 'prop-types';
 import XDate from 'xdate';
 
@@ -101,6 +101,10 @@ class Calendar extends Component {
     this.pressDay = this.pressDay.bind(this);
     this.longPressDay = this.longPressDay.bind(this);
     this.shouldComponentUpdate = shouldComponentUpdate;
+
+    // this.days = dateutils.page(this.state.currentMonth, this.props.firstDay);
+    this.minDate = parseDate(props.minDate);
+    this.maxDate = parseDate(props.maxDate);
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -159,12 +163,11 @@ class Calendar extends Component {
   }
 
   renderDay(day, id) {
-    const minDate = parseDate(this.props.minDate);
-    const maxDate = parseDate(this.props.maxDate);
+   
     let state = '';
     if (this.props.disabledByDefault) {
       state = 'disabled';
-    } else if ((minDate && !dateutils.isGTE(day, minDate)) || (maxDate && !dateutils.isLTE(day, maxDate))) {
+    } else if ((this.minDate && !dateutils.isGTE(day, this.minDate)) || (this.maxDate && !dateutils.isLTE(day, this.maxDate))) {
       state = 'disabled';
     } else if (!dateutils.sameMonth(day, this.state.currentMonth)) {
       state = 'disabled';
@@ -172,7 +175,7 @@ class Calendar extends Component {
       state = 'today';
     }
 
-    if (!dateutils.sameMonth(day, this.state.currentMonth) && this.props.hideExtraDays) {
+    if (this.props.hideExtraDays && !dateutils.sameMonth(day, this.state.currentMonth)) {
       return (<View key={id} style={{flex: 1}}/>);
     }
 
@@ -183,6 +186,7 @@ class Calendar extends Component {
 
     return (
       <View style={{flex: 1, alignItems: 'center'}} key={id}>
+        {/* <Text> */}
         <DayComp
           testID={`${SELECT_DATE_SLOT}-${dateAsObject.dateString}`}
           state={state}
@@ -192,9 +196,11 @@ class Calendar extends Component {
           date={dateAsObject}
           marking={this.getDateMarking(day)}
           accessibilityLabel={accessibilityLabel}
+          todayBackColor={this.props.todayBackColor}
         >
           {date}
         </DayComp>
+        {/* </Text> */}
       </View>
     );
   }
@@ -273,24 +279,44 @@ class Calendar extends Component {
     );
   }
 
+  keyExtractor = (item) => {
+    return item.toString();
+  }
+
   renderWeek(days, id) {
     const week = [];
-    days.forEach((day, id2) => {
-      week.push(this.renderDay(day, id2));
-    }, this);
+    // days.forEach((day, id2) => {
+    //   week.push(this.renderDay(day, `${id2}-${day.toString()}`));
+    // }, this);
 
     if (this.props.showWeekNumbers) {
       week.unshift(this.renderWeekNumber(days[days.length - 1].getWeek()));
     }
 
-    return (<View style={this.style.week} key={id}>{week}</View>);
+    return (<View style={[{alignContent: 'center'}]} key={id.toString()}>
+      <FlatList
+      // numColumns={3}
+        scrollEnabled={false}
+        // snapToAlignment="center"
+        horizontal
+        overScrollMode="never"
+        // style={{alignContent: 'center'}}
+        contentContainerStyle={{alingItems: 'center',paddingHorizontal: 25, justifyContent: 'space-between', width: '100%'}}
+        keyExtractor={this.keyExtractor}
+        data={days}
+        renderItem={({item}) => this.renderDay(item, `${item.toString()}`)}
+      />
+    </View>);
   }
 
   render() {
-    const days = dateutils.page(this.state.currentMonth, this.props.firstDay);
+
     const weeks = [];
-    while (days.length) {
-      weeks.push(this.renderWeek(days.splice(0, 7), weeks.length));
+    let i = 1;
+    const days = dateutils.page(this.state.currentMonth, this.props.firstDay);
+    while (days.length > 0) {
+      weeks.push(this.renderWeek(days.splice(0, 7), i));
+      i++;
     }
 
     let indicator;
@@ -329,7 +355,9 @@ class Calendar extends Component {
           disableArrowLeft={this.props.disableArrowLeft}
           disableArrowRight={this.props.disableArrowRight}
         />
-        <View style={this.style.monthView}>{weeks}</View>
+        <View style={this.style.monthView}>
+         {weeks}
+        </View>
       </View>);
   }
 }
