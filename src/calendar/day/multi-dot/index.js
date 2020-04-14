@@ -89,7 +89,7 @@ class Day extends Component {
         accessibilityRole={isDisabled ? undefined : 'button'}
         accessibilityLabel={this.props.accessibilityLabel}
       >
-        <View style={{backgroundColor: backColor, borderRadius: 50, padding: 3, paddingBottom: 1}}>
+        <View style={{backgroundColor: backColor, borderRadius: 50, padding: 3, paddingBottom: 1, maxHeight: 20}}>
           <Text allowFontScaling={false} style={textStyle}>{String(this.props.children)}</Text>
         </View>
         <View style={{flexDirection: 'row'}}>{dot}</View>
