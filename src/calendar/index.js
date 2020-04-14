@@ -186,7 +186,6 @@ class Calendar extends Component {
 
     return (
       <View style={{flex: 1, alignItems: 'center'}} key={id}>
-        {/* <Text> */}
         <DayComp
           testID={`${SELECT_DATE_SLOT}-${dateAsObject.dateString}`}
           state={state}
@@ -200,7 +199,6 @@ class Calendar extends Component {
         >
           {date}
         </DayComp>
-        {/* </Text> */}
       </View>
     );
   }
@@ -301,7 +299,7 @@ class Calendar extends Component {
         horizontal
         overScrollMode="never"
         // style={{alignContent: 'center'}}
-        contentContainerStyle={{alingItems: 'center',paddingHorizontal: 25, justifyContent: 'space-between', width: '100%'}}
+        contentContainerStyle={{alingItems: 'center',paddingHorizontal: 10, justifyContent: 'space-between', flexGrow: 1}}
         keyExtractor={this.keyExtractor}
         data={days}
         renderItem={({item}) => this.renderDay(item, `${item.toString()}`)}
